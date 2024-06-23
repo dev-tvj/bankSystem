@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dev.Dockerfile
+    volumes:
+      - ..:/workspace
+    command: sleep infinity
+    ports:
+      - 5000:5000
+      - 5001:5001
+    networks:
+      - devnetwork
+
+  # Service for RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management  # Uses RabbitMQ with management plugin
+    container_name: rabbitmq
+    ports:
+      - 5672:5672  # Default RabbitMQ port
+      - 15672:15672  # Management interface port
+    volumes:
+      - ./rabbitMqScript.sh:/rabbitMqScript.sh
+    # Run script to create Queues and Exchange in RabbitMQ && Keeps the container running
+    command: bash -c "chmod +x /rabbitMqScript.sh && rabbitmq-server & sleep 15 && /rabbitMqScript.sh"
+    networks:
+      - devnetwork  # Connects to the defined network
+
+    
+networks:
+  devnetwork:
+    driver: bridge

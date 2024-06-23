@@ -1,0 +1,14 @@
+name: C# Dev Container
+
+dockerComposeFile: docker-compose.yml
+
+service: devvvvvvvvvvv
+
+workspaceFolder: /workspace
+
+# Define VS Code settings
+settings:
+  terminal.integrated.defaultProfile.linux: bash
+
+# Command to run after creating the container
+postCreateCommand: dotnet restore  # Restore dependencies after creating the container
