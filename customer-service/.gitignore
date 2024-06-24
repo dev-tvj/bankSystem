@@ -80,6 +80,8 @@ StyleCopReport.xml
 *_h.h
 *.ilk
 *.meta
+**/obj/
+**/Debug/
 *.obj
 *obj
 *.obj/
