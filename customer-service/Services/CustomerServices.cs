@@ -1,36 +1,36 @@
+using System.Text;
 using CustomerService.Data;
 using CustomerService.Models;
 using CustomerService.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using RabbitMQ.Client;
 
 namespace CustomerService.Services
 {
     public class CustomerServices : ICustomerService
     {
         private readonly CustomerContext _context;
-        // private readonly ConnectionFactory _factory;
+        private readonly ConnectionFactory _factory;
         
-        public CustomerServices(CustomerContext context) // ConnectionFactory factory 
+        public CustomerServices(CustomerContext context, ConnectionFactory factory)
         {
             _context = context;
-            // _factory = factory;
+            _factory = factory;
         }
         
-        // public Task SendCustomerCreatedEventAsync(Customer customer)
-        // {
-        //     using var connection = _factory.CreateConnection();
-        //     using var channel = connection.CreateModel();
+        public void SendCustomerCreatedEventAsync(Customer customer)
+        {
+            using var connection = _factory.CreateConnection();
+            using var channel = connection.CreateModel();
 
-        //     var message = System.Text.Json.JsonSerializer.Serialize(customer);
-        //     var body = Encoding.UTF8.GetBytes(message);
+            var message = System.Text.Json.JsonSerializer.Serialize(customer);
+            var body = Encoding.UTF8.GetBytes(message);
 
-        //     channel.BasicPublish(exchange: "customer_exchange",
-        //                          routingKey: "new_customer",
-        //                          basicProperties: null,
-        //                          body: body);
-
-        //     return Task.CompletedTask;
-        // }
+            channel.BasicPublish(exchange: "customer_exchange",
+                                 routingKey: "new_customer",
+                                 basicProperties: null,
+                                 body: body);
+        }
 
 
         public Task CreateNewCustomerAsync(Customer customer)
