@@ -1,9 +1,9 @@
 using CustomerService.Data;
 using CustomerService.Services;
 using CustomerService.Services.Interfaces;
+using CustomerService.Workers;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,12 +16,24 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<CustomerContext>(options =>
     options.UseInMemoryDatabase("CustomerServiceDb"));
 
-// Configuração do RabbitMQ
-var factory = new ConnectionFactory { HostName = "rabbitmq" };
-using var connection = factory.CreateConnection();
-using var channel = connection.CreateModel();
 
+
+// Configure RabbitMQ connection factory
+builder.Services.AddSingleton<ConnectionFactory>(new ConnectionFactory 
+    { 
+        HostName = "rabbitmq",
+        UserName = "guest",
+        Password = "guest"
+    });
+
+// Add scoped service for ICustomerService
 builder.Services.AddScoped<ICustomerService, CustomerServices>();
+
+// Add the CreditCardQueueWorker service as a hosted service
+builder.Services.AddHostedService<CreditCardQueueWorker>();
+
+// Add the CreditOfferQueueWorker service as a hosted service
+builder.Services.AddHostedService<CreditOfferQueueWorker>();
 
 
 var app = builder.Build();
@@ -30,7 +42,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My service");
+        c.RoutePrefix = string.Empty;  // Set Swagger UI at apps root
+    });
 }
 
 app.UseHttpsRedirection();

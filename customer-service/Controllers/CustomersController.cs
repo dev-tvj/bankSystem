@@ -22,8 +22,7 @@ namespace CustomerService.Controllers
         public async Task<ActionResult<Customer>> CreateCustomer(Customer customer)
         {
             await _customerServices.CreateNewCustomerAsync(customer);
-
-            //await _customerServices.SendCustomerCreatedEventAsync(customer);
+            _customerServices.SendCustomerCreatedEventAsync(customer);
 
             return CreatedAtAction(nameof(CreateCustomer), new { id = customer.Id }, customer);
         }
