@@ -2,9 +2,9 @@ namespace CustomerService.Models
 {
     public class CreditCard
     {
-    public int Id { get; set; }
-    public int CustomerId { get; set; }
-    public string CardNumber { get; set; }
-    public DateTime CardExpiringDate { get; set; }    
+        public required int Id { get; set; }
+        public required int CustomerId { get; set; }
+        public required string? CardNumber { get; set; }
+        public required DateTime CardExpiringDate { get; set; }
     }
 }

@@ -4,6 +4,6 @@ namespace CustomerService.Models
     {
         public required int Id { get; set; }
         public required int CustomerId { get; set; }
-        public required CreditCard List<CreditCard> { get; set;}
+        public required List<CreditCard> CreditCards { get; set; }
     }
 }

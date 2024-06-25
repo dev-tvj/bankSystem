@@ -13,7 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configure DbContext
-builder.Services.AddDbContext<CustomerContext>(options =>
+builder.Services.AddDbContext<BankContext>(options =>
     options.UseInMemoryDatabase("CustomerServiceDb"));
 
 
@@ -26,8 +26,11 @@ builder.Services.AddSingleton<ConnectionFactory>(new ConnectionFactory
         Password = "guest"
     });
 
-// Add scoped service for ICustomerService
-builder.Services.AddScoped<ICustomerService, CustomerServices>();
+// Add scoped service for ICustomerServices
+builder.Services.AddScoped<ICustomerServices, CustomerServices>();
+
+// Add scoped service for IWorkerServices
+builder.Services.AddSingleton<IWorkerServices, WorkerServices>();
 
 // Add the CreditCardQueueWorker service as a hosted service
 builder.Services.AddHostedService<CreditCardQueueWorker>();

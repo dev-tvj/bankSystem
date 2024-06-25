@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using CustomerService.Data;
 using CustomerService.Models;
 using CustomerService.Services.Interfaces;
@@ -7,12 +8,13 @@ using RabbitMQ.Client;
 
 namespace CustomerService.Services
 {
-    public class CustomerServices : ICustomerService
+    public class CustomerServices : ICustomerServices
     {
-        private readonly CustomerContext _context;
+        private readonly BankContext _context;
         private readonly ConnectionFactory _factory;
+
         
-        public CustomerServices(CustomerContext context, ConnectionFactory factory)
+        public CustomerServices(BankContext context, ConnectionFactory factory)
         {
             _context = context;
             _factory = factory;
@@ -57,9 +59,6 @@ namespace CustomerService.Services
 
             return customers;
         }
-
-
-
 
     }
 }
