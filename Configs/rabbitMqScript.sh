@@ -40,7 +40,7 @@ QUEUES=("credit_proposal_queue" "credit_card_queue" "new_customer_queue")
 ROUTING_KEYS=("credit_proposal" "credit_card" "new_customer")
 
 
-echo "### Installing necessary packages"
+#echo "### Installing necessary packages"
 apt-get update && sleep 10 && apt-get install -y curl && sleep 5
 
 

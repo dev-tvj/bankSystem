@@ -66,6 +66,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My service");
         c.RoutePrefix = string.Empty;  // Set Swagger UI at apps root
     });
+    //app.ApplyMigrations();
 }
 
 app.UseHttpsRedirection();
