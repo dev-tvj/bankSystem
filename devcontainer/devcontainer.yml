@@ -2,7 +2,7 @@ name: C# Dev Container
 
 dockerComposeFile: docker-compose.yml
 
-service: devvvvvvvvvvv
+service: my-dev-container
 
 workspaceFolder: /workspace
 

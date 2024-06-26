@@ -21,12 +21,6 @@ WORKDIR /workspace
 # Copy all files from the current directory to the container's workspace
 COPY . .
 
-# # Restore dependencies
-# RUN dotnet restore
-
-# # Build the project
-# RUN dotnet build
-
 # Expose ports for the .NET application
-EXPOSE 5000
-EXPOSE 5001
+# EXPOSE 5000
+# EXPOSE 5001

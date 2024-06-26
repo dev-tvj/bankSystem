@@ -1,4 +1,4 @@
-@customer_service_HostAddress = http://localhost:5020/swagger
+@customer_service_HostAddress = http://localhost:5100/swagger
 
 GET {{customer_service_HostAddress}}/weatherforecast/
 Accept: application/json

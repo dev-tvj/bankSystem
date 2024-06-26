@@ -2,19 +2,70 @@ version: '3.8'
 
 services:
 
+  # my-dev-container:
+  #   build:
+  #     context: ../
+  #     dockerfile: Dev.Dockerfile
+  #   volumes:
+  #     - ..:/workspace
+  #   command: sleep infinity
+  #   ports:
+  #     - 5002:5000
+  #     - 5003:5001
+  #   networks:
+  #     - devnetwork
+  #   depends_on:
+  #     - rabbitmq
 
-  dev-customer-service:
+  customer-service:
     build:
-      context: .
-      dockerfile: Dev.Dockerfile
+      context: ../customer-service
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5100 
+      - ASPNETCORE_HTTPS_PORTS=5101
     volumes:
-      - ..:/workspace
+      - ../customer-service:/customer-service
     command: sleep infinity
     ports:
-      - 5000:5000
-      - 5001:5001
+      - 5100:5000
+      - 5101:5001
     networks:
       - devnetwork
+    depends_on:
+      - rabbitmq
+
+
+  # credit-offer-service:
+  #   build:
+  #     context: ../credit-offer-service
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ..:/credit-offer-service-workspace
+  #   command: sleep infinity
+  #   ports:
+  #     - 5200:5000
+  #     - 5201:5001
+  #   networks:
+  #     - devnetwork
+  #   depends_on:
+  #     - rabbitmq
+
+  # credit-card-service:
+  #   build:
+  #     context: ../credit-card-service
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - ..:/credit-card-service-workspace
+  #   command: sleep infinity
+  #   ports:
+  #     - 5300:5000
+  #     - 5301:5001
+  #   networks:
+  #     - devnetwork
+  #    depends_on:
+  #      - rabbitmq
 
 
   rabbitmq:
@@ -24,11 +75,14 @@ services:
       - 5672:5672  # Default RabbitMQ port
       - 15672:15672  # Management interface port
     volumes:
-      - ./rabbitMqScript.sh:/rabbitMqScript.sh
+      - ../Configs/rabbitMqScript.sh:/rabbitMqScript.sh
     # Run script to create Queues and Exchange in RabbitMQ && Keeps the container running
     command: bash -c "chmod +x /rabbitMqScript.sh && rabbitmq-server & sleep 15 && /rabbitMqScript.sh"
     networks:
-      - devnetwork  # Connects to the defined network
+      - devnetwork 
+    depends_on:
+      - postgres
+
 
 
   postgres:
@@ -52,6 +106,8 @@ services:
       - 8080:8080
     networks:
       - devnetwork
+    depends_on:
+      - postgres
 
   
 networks:
