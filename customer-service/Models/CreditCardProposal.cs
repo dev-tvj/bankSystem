@@ -1,9 +1,16 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace CustomerService.Models
 {
     public class CreditCardProposal
     {
-        public required int Id { get; set; }
-        public required int CustomerId { get; set; }
-        public required CreditCard List<CreditCard> { get; set;}
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public int CustomerId { get; set; }
+
+        [Required]
+        public List<CreditCard> CreditCards { get; set; }
     }
 }

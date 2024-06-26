@@ -1,7 +1,9 @@
 version: '3.8'
 
 services:
-  dev:
+
+
+  dev-customer-service:
     build:
       context: .
       dockerfile: Dev.Dockerfile
@@ -14,7 +16,7 @@ services:
     networks:
       - devnetwork
 
-  # Service for RabbitMQ
+
   rabbitmq:
     image: rabbitmq:3-management  # Uses RabbitMQ with management plugin
     container_name: rabbitmq
@@ -28,7 +30,30 @@ services:
     networks:
       - devnetwork  # Connects to the defined network
 
-    
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - 5432:5432
+    networks:
+      - devnetwork
+
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - devnetwork
+
+  
 networks:
   devnetwork:
     driver: bridge

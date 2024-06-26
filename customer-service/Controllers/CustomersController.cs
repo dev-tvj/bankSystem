@@ -9,9 +9,9 @@ namespace CustomerService.Controllers
     [ApiController]
     public class CustomersController : ControllerBase
     {
-        private readonly ICustomerService _customerServices;
+        private readonly ICustomerServices _customerServices;
 
-        public CustomersController(ICustomerService customerServices)
+        public CustomersController(ICustomerServices customerServices)
         {
             _customerServices = customerServices;
         }
@@ -19,28 +19,12 @@ namespace CustomerService.Controllers
 
         // POST: api/Customers
         [HttpPost]
-        public async Task<ActionResult<Customer>> CreateCustomer(Customer customer)
+        public async Task<ActionResult<Customer>> CreateCustomer([FromBody] Customer customer)
         {
             await _customerServices.CreateNewCustomerAsync(customer);
             _customerServices.SendCustomerCreatedEventAsync(customer);
 
             return CreatedAtAction(nameof(CreateCustomer), new { id = customer.Id }, customer);
-        }
-
-        // GET: api/Customers/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> SearchCustomerById(int id) 
-        {
-            try
-            {
-                var customer = await _customerServices.SearchCustomerByIdAsync(id);
-                
-                return Ok(customer);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
         }
 
 
@@ -59,6 +43,25 @@ namespace CustomerService.Controllers
                 return NotFound(ex.Message);
             }
         }
+
+
+        // GET: api/Customers/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> SearchCustomerById(int id) 
+        {
+            try
+            {
+                var customer = await _customerServices.SearchCustomerByIdAsync(id);
+                
+                return Ok(customer);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+
 
         
     }

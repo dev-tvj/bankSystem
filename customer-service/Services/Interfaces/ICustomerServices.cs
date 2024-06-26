@@ -2,7 +2,7 @@ using CustomerService.Models;
 
 namespace CustomerService.Services.Interfaces
 {
-    public interface ICustomerService
+    public interface ICustomerServices
     {
         void SendCustomerCreatedEventAsync(Customer customer);
         Task CreateNewCustomerAsync(Customer customer);

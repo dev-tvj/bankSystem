@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+
+RUN echo "Ensure HTTPS certificates are cleaned and trusted for secure connections"
+RUN dotnet dev-certs https --clean && dotnet dev-certs https --trust
+
 # Set the working directory
 WORKDIR /workspace
 

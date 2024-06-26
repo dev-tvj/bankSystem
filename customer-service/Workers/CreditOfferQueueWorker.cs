@@ -1,22 +1,15 @@
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using CustomerService.Data;
 using CustomerService.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace CustomerService.Workers
 {
     public class CreditOfferQueueWorker : BackgroundService
     {
-        // private readonly CustomerContext _context;
+        // private readonly BankContext _context;
         private readonly ConnectionFactory _factory;
         private IModel _channel;
         private readonly IConnection _connection;
@@ -32,14 +25,14 @@ namespace CustomerService.Workers
             _serviceProvider = serviceProvider;
 
             _channel.ExchangeDeclare(exchange: "customer_exchange",
-                         type: ExchangeType.Direct,
-                         durable: true,
-                         autoDelete: false,
-                         arguments: null);
+                                    type: ExchangeType.Direct,
+                                    durable: true,
+                                    autoDelete: false,
+                                    arguments: null);
 
-            _channel.QueueBind(queue: "new_customer_queue",
-                            exchange: "customer_exchange",
-                            routingKey: "new_customer");
+            _channel.QueueBind(queue: "credit_proposal_queue",
+                                exchange: "customer_exchange",
+                                routingKey: "credit_proposal");
 
 
             Customers =  new List<Customer>();
@@ -49,7 +42,7 @@ namespace CustomerService.Workers
         {
             stoppingToken.ThrowIfCancellationRequested();
 
-            Console.WriteLine("RabbitMQWorker is starting...");
+            Console.WriteLine("RabbitMQ CreditOfferQueueWorker is starting...");
 
             var consumer = new EventingBasicConsumer(_channel);
 
@@ -75,7 +68,7 @@ namespace CustomerService.Workers
 
                         using (var scope = _serviceProvider.CreateScope())
                         {
-                            var dbContext = scope.ServiceProvider.GetRequiredService<CustomerContext>();
+                            var dbContext = scope.ServiceProvider.GetRequiredService<BankContext>();
 
                             var existingCustomer = await dbContext.Customers.FindAsync(customer.Id);
                             
@@ -120,7 +113,7 @@ namespace CustomerService.Workers
                 }
             };
 
-            _channel.BasicConsume(queue: "new_customer_queue", autoAck: false, consumer: consumer);
+            _channel.BasicConsume(queue: "credit_proposal_queue", autoAck: false, consumer: consumer);
 
             return Task.CompletedTask;
         }
