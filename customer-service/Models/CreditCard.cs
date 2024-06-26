@@ -1,10 +1,24 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+
 namespace CustomerService.Models
 {
     public class CreditCard
     {
-        public required int Id { get; set; }
-        public required int CustomerId { get; set; }
-        public required string? CardNumber { get; set; }
-        public required DateTime CardExpiringDate { get; set; }
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public int CustomerId { get; set; }
+
+        [Required]
+        public int CreditCardProposalId { get; set; }
+
+        [Required]
+        public string CardNumber { get; set; }
+
+        [Required]
+        public DateTime CardExpiringDate { get; set; }
     }
+
 }

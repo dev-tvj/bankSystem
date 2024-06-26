@@ -26,6 +26,7 @@ extensions=(
     "PKief.material-icon-theme"
 )
 
+
 echo "Installing extensions..."
 
 for extension in "${extensions[@]}"

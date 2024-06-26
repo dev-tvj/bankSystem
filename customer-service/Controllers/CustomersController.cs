@@ -19,7 +19,7 @@ namespace CustomerService.Controllers
 
         // POST: api/Customers
         [HttpPost]
-        public async Task<ActionResult<Customer>> CreateCustomer(Customer customer)
+        public async Task<ActionResult<Customer>> CreateCustomer([FromBody] Customer customer)
         {
             await _customerServices.CreateNewCustomerAsync(customer);
             _customerServices.SendCustomerCreatedEventAsync(customer);
