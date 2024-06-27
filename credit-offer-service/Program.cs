@@ -1,44 +1,57 @@
+
+using RabbitMQ.Client;
+using System.Text.Json.Serialization;
+using CreditOfferService.Services.Interfaces;
+using CreditOfferService.Services;
+using CreditOfferService.Workers;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+        });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+
+// Configure RabbitMQ connection factory
+builder.Services.AddSingleton<ConnectionFactory>(new ConnectionFactory 
+{ 
+    HostName = "rabbitmq",
+    UserName = "guest",
+    Password = "guest"
+});
+
+// Add scoped service for ICustomerServices
+builder.Services.AddSingleton<ICreditOfferServices, CreditOfferServices>();
+
+// Add the CreditOfferQueueWorker service as a hosted service
+builder.Services.AddHostedService<CreditOfferQueueWorker>();
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My service");
+        c.RoutePrefix = string.Empty;  // Set Swagger UI at apps root
+    });
+    //app.ApplyMigrations();
 }
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+app.UseAuthorization();
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
