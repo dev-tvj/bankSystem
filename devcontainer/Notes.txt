@@ -1,3 +1,21 @@
+
+
+# LINKS
+
+Customer Service Swagger
+http://localhost:5200
+
+RabbitMQ
+http://localhost:15672
+
+Database
+http://localhost:8080
+
+
+____________________
+
+# COMMANDS
+
 sudo lsof -i :5000
 netstat -anop | grep :5000
 sudo kill -9 <PID>
