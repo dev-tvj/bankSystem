@@ -11,7 +11,6 @@ services:
     command: sleep infinity
     ports:
       - 5100:5001
-      - 5003:5001
     networks:
       - devnetwork
     depends_on:
@@ -24,34 +23,39 @@ services:
       dockerfile: Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_HTTP_PORTS=5100 
+      - ASPNETCORE_HTTP_PORTS=5200 
       - ASPNETCORE_HTTPS_PORTS=5101
     volumes:
       - ../customer-service:/customer-service
     command: sleep infinity
     ports:
       - 5200:5002
-      - 5101:5001
     networks:
       - devnetwork
     depends_on:
       - rabbitmq
 
 
-  # credit-offer-service:
-  #   build:
-  #     context: ../credit-offer-service
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ..:/credit-offer-service-workspace
-  #   command: sleep infinity
-  #   ports:
-  #     - 5300:5000
-  #     - 5201:5001
-  #   networks:
-  #     - devnetwork
-  #   depends_on:
-  #     - rabbitmq
+  credit-offer-service:
+    build:
+      context: ../credit-offer-service
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5300 
+      - ASPNETCORE_HTTPS_PORTS=5101
+    volumes:
+      - ../credit-offer-service:/credit-offer-service
+    command: sleep infinity
+    ports:
+      - 5300:5003
+    networks:
+      - devnetwork
+    depends_on:
+      - rabbitmq
+
+
+
 
   # credit-card-service:
   #   build:
