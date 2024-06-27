@@ -2,20 +2,21 @@ version: '3.8'
 
 services:
 
-  # my-dev-container:
-  #   build:
-  #     context: ../
-  #     dockerfile: Dev.Dockerfile
-  #   volumes:
-  #     - ..:/workspace
-  #   command: sleep infinity
-  #   ports:
-  #     - 5002:5000
-  #     - 5003:5001
-  #   networks:
-  #     - devnetwork
-  #   depends_on:
-  #     - rabbitmq
+  my-dev-container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace
+    command: sleep infinity
+    ports:
+      - 5100:5001
+      - 5003:5001
+    networks:
+      - devnetwork
+    depends_on:
+      - rabbitmq
+
 
   customer-service:
     build:
@@ -29,7 +30,7 @@ services:
       - ../customer-service:/customer-service
     command: sleep infinity
     ports:
-      - 5100:5000
+      - 5200:5002
       - 5101:5001
     networks:
       - devnetwork
@@ -45,7 +46,7 @@ services:
   #     - ..:/credit-offer-service-workspace
   #   command: sleep infinity
   #   ports:
-  #     - 5200:5000
+  #     - 5300:5000
   #     - 5201:5001
   #   networks:
   #     - devnetwork
@@ -60,7 +61,7 @@ services:
   #     - ..:/credit-card-service-workspace
   #   command: sleep infinity
   #   ports:
-  #     - 5300:5000
+  #     - 5400:5000
   #     - 5301:5001
   #   networks:
   #     - devnetwork

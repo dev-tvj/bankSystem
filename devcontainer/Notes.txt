@@ -1,0 +1,5 @@
+sudo lsof -i :5000
+netstat -anop | grep :5000
+sudo kill -9 <PID>
+
+docker exec -it <container_id> /bin/bash

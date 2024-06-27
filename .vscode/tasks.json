@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/customer-service/customer-service.csproj",
+                "${workspaceFolder}/credit-offer-service/credit-offer-service.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/customer-service/customer-service.csproj",
+                "${workspaceFolder}/credit-offer-service/credit-offer-service.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/customer-service/customer-service.csproj"
+                "${workspaceFolder}/credit-offer-service/credit-offer-service.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

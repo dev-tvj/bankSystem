@@ -60,38 +60,26 @@ namespace CustomerService.Workers
 
                 try
                 {
-                    var customer = JsonSerializer.Deserialize<Customer>(message, options);
+                    var creditProposalObject = JsonSerializer.Deserialize<CreditProposal>(message, options);
 
-                    if (customer != null)
+                    if (creditProposalObject != null)
                     {
-                        Console.WriteLine($"Customer received: Id={customer.Id}, Name={customer.Name}, Email={customer.Email}, Score={customer.Score}");
+                        Console.WriteLine($"Customer received: Id={creditProposalObject.Id}, CustomerId={creditProposalObject.CustomerId}, AvailableCredit={creditProposalObject.AvailableCredit}");
 
                         using (var scope = _serviceProvider.CreateScope())
                         {
-                            var dbContext = scope.ServiceProvider.GetRequiredService<BankContext>();
-
-                            var existingCustomer = await dbContext.Customers.FindAsync(customer.Id);
-                            
-                            if (existingCustomer == null)
+                            try 
                             {
-                                dbContext.Customers.Add(customer);
-                                var result = await dbContext.SaveChangesAsync();
+                                var dbContext = scope.ServiceProvider.GetRequiredService<BankContext>();
+                                dbContext.CreditProposals.Add(creditProposalObject);
 
-                                if (result > 0)
-                                {
-                                    Console.WriteLine("Customer saved successfully.");
-                                    _channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Failed to save customer.");
-                                    //_channel.BasicNack(deliveryTag: ea.DeliveryTag, multiple: false, requeue: true);
-                                }
+                                await dbContext.SaveChangesAsync();
+                                Console.WriteLine("Credit Proposal saved successfully.");
                             }
-                            else
+                            catch
                             {
-                                Console.WriteLine($"Customer with Id {customer.Id} already exists. Skipping.");
-                                _channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
+                                Console.WriteLine("Failed to save the Credit Proposal in the database.");
+                                //_channel.BasicNack(deliveryTag: ea.DeliveryTag, multiple: false, requeue: true);
                             }
                         }
                     }

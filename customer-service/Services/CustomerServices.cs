@@ -1,5 +1,4 @@
 using System.Text;
-using System.Text.Json;
 using CustomerService.Data;
 using CustomerService.Models;
 using CustomerService.Services.Interfaces;
