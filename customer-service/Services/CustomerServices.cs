@@ -42,7 +42,7 @@ namespace CustomerService.Services
 
         public async Task<Customer> SearchCustomerByIdAsync(int id) 
         {
-            var customer = await _context.Customers.FindAsync(id) ?? throw new Exception($"Client with ID {id} not found.");
+            Customer customer = await _context.Customers.FindAsync(id) ?? throw new Exception($"Client with ID {id} not found.");
 
             return customer;
         }

@@ -2,6 +2,8 @@ using System.Text;
 using System.Text.Json;
 using CustomerService.Data;
 using CustomerService.Models;
+using CustomerService.Services.Interfaces;
+using Microsoft.VisualBasic;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -14,15 +16,17 @@ namespace CustomerService.Workers
         private IModel _channel;
         private readonly IConnection _connection;
         private readonly IServiceProvider _serviceProvider;
-        public List<Customer> Customers { get; private set; }
+        private readonly IWorkerServices _workerServices;
 
 
-        public CreditOfferQueueWorker(ConnectionFactory factory, IServiceProvider serviceProvider)
+
+        public CreditOfferQueueWorker(ConnectionFactory factory, IServiceProvider serviceProvider, IWorkerServices workerServices)
         {
             _factory = factory;
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
             _serviceProvider = serviceProvider;
+            _workerServices = workerServices;
 
             _channel.ExchangeDeclare(exchange: "customer_exchange",
                                     type: ExchangeType.Direct,
@@ -35,7 +39,7 @@ namespace CustomerService.Workers
                                 routingKey: "credit_proposal");
 
 
-            Customers =  new List<Customer>();
+
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -71,7 +75,12 @@ namespace CustomerService.Workers
                             try 
                             {
                                 var dbContext = scope.ServiceProvider.GetRequiredService<BankContext>();
-                                dbContext.CreditProposals.Add(creditProposalObject);
+
+                                Customer customer = await dbContext.Customers.FindAsync(creditProposalObject.CustomerId) ?? throw new Exception($"Client with ID {creditProposalObject.CustomerId} not found.");
+
+                                await _workerServices.UpdateCreditProposal(creditProposalObject);
+                                //dbContext.CreditProposals.Add(creditProposalObject);
+                                //dbContext.Customers.Add(customer);
 
                                 await dbContext.SaveChangesAsync();
                                 Console.WriteLine("Credit Proposal saved successfully.");

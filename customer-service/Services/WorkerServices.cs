@@ -18,6 +18,56 @@ namespace CustomerService.Services
             _serviceProvider = serviceProvider;
         }
 
+        public async Task<ProcessStatus> UpdateCreditProposal(CreditProposal creditProposalObject) 
+        {
+            try 
+            {
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetRequiredService<BankContext>();
+
+                    Customer? customer = await dbContext.Customers.FindAsync(creditProposalObject.CustomerId);
+
+                    if (customer == null)
+                    {
+                        throw new Exception($"Client with ID {creditProposalObject.CustomerId} not found.");
+                    }
+
+                    CreditProposal? existingCreditProposal = await dbContext.CreditProposals
+                        .FirstOrDefaultAsync(cp => cp.CustomerId == creditProposalObject.CustomerId);
+
+                    customer.AvailableCredit = creditProposalObject.AvailableCredit;
+
+                    if (existingCreditProposal != null)
+                    {
+                        existingCreditProposal.AvailableCredit = creditProposalObject.AvailableCredit;
+                        dbContext.CreditProposals.Update(existingCreditProposal);
+                        
+                        dbContext.Customers.Update(customer);
+
+                    }
+                    else
+                    {
+                        dbContext.CreditProposals.Add(creditProposalObject);
+                        dbContext.Customers.Update(customer);
+                    }
+
+                    await dbContext.SaveChangesAsync();
+                    Console.WriteLine("Credit Proposal saved successfully.");
+
+                    return ProcessStatus.Success;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to save the Credit Proposal in the database. Error: {ex.Message}");
+                //_channel.BasicNack(deliveryTag: ea.DeliveryTag, multiple: false, requeue: true);
+                return ProcessStatus.UnexpectedError;
+            }
+        }
+
+
 
         public async Task<ProcessStatus> ProcessCreditCardProposalQueue(string message) 
         {
@@ -40,8 +90,6 @@ namespace CustomerService.Services
                             existingCustomer.CreditCards = creditCardProposalObject.CreditCards;
                             await dbContext.SaveChangesAsync();
 
-                            
-                            // Mostra o estado do objeto depois de modificar
                             Console.WriteLine("Customer depois de modificar:");
                             Console.WriteLine($"Id: {existingCustomer.Id}, Name: {existingCustomer.Name}, Email: {existingCustomer.Email}, Score: {existingCustomer.Score}");
                             if (existingCustomer.CreditCards != null)
@@ -52,7 +100,6 @@ namespace CustomerService.Services
                                 }
                             }
 
-    Console.WriteLine("##########################################");
                             return ProcessStatus.Success;
                         }
                         else
